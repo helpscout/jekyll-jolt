@@ -1,4 +1,4 @@
-# jekyll-template
+# jekyll-template [![Build Status](https://travis-ci.org/helpscout/jekyll-template.svg?branch=master)](https://travis-ci.org/helpscout/jekyll-template)
 
 Custom template block with YAML front matter support for Jekyll
 
