@@ -1,6 +1,15 @@
-require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+require 'rubygems'
+require 'rake'
+require 'rdoc'
+require 'date'
+require 'yaml'
+require 'rake/testtask'
 
-RSpec::Core::RakeTask.new(:spec)
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), *%w[lib]))
+require 'jekyll/version'
 
-task :default => :spec
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
+end

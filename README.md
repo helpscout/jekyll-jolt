@@ -80,10 +80,8 @@ Your template content needs to begin with `{% template %}` and end with `{% endt
 The final rendered `.html` will look like this:
 
 ```html
-<h1>Hello</h1>
-<div class="awesome">
-  <p>I am content!</p>
-</div>
+<h1 id="hello">Hello</h1>
+<div class="awesome"> <p>I am content!</p> </div>
 ```
 
 
@@ -101,10 +99,7 @@ I am content! As HTML!
 The final rendered `.html` will look like this:
 
 ```html
-<h1>Hello</h1>
-<div class="awesome">
-  # Title I am content! As HTML!
-</div>
+<div class="awesome"> # Title I am content! As HTML! </div>
 ```
 
 
