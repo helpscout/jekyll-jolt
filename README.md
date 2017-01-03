@@ -158,5 +158,15 @@ Yo dawg. I heard you liked templates! The template block supports nesting 👏
 
 ---
 
+
 More documentation coming soon!
 
+
+---
+
+
+## Note
+
+I am **not** a Ruby developer. (My background is mostly with Javascript). I wrote this plugin based on experimentation and combing through [Jekyll's](https://github.com/jekyll/jekyll) and [Liquid's](https://github.com/Shopify/liquid) source code + documentation. I'm sure there's probably code in there somewhere that's offensive to Ruby devs.
+
+We've been using `{% template %}` for many months now on the [Help Scout website](https://www.helpscout.net/), and it's been working great! We haven't noticed any slowdowns in build times (and we use **a lot** of templates).
