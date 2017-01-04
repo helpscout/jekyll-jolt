@@ -18,7 +18,7 @@ EXPECTED
     end
 
 
-    should "not prevent content before/after template from rendering" do
+    should "render templates without affecting content before/after it" do
       post = @site.posts.docs[1]
       expected = <<EXPECTED
 <h1 id="hello">Hello</h1>
@@ -64,6 +64,21 @@ EXPECTED
       post = @site.posts.docs[5]
       expected = <<EXPECTED
 <div class="awesome"> # Heading Content </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
+    should "render templates regardless of indentation amount" do
+      post = @site.posts.docs[6]
+      expected = <<EXPECTED
+<div>
+  <div>
+    <div>
+      <div class="outer"> <div class="indentation"> <h1 id="heading">Heading</h1> <p>Content</p> </div> </div>
+    </div>
+  </div>
+</div>
 EXPECTED
       assert_equal(expected, post.output)
     end
