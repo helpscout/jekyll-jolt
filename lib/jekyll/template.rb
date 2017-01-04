@@ -54,7 +54,9 @@ module Jekyll
         content = super
         # Remove leading whitespace
         # content = content.lstrip
-        compressor = HtmlCompressor::Compressor.new
+        compressor = HtmlCompressor::Compressor.new({
+          :remove_comments => false
+        })
         site = context.registers[:site]
         template = load_template(context)
 
@@ -173,7 +175,8 @@ module Jekyll
       def parse_front_matter(content)
         # Strip leading white-spaces
         compressor = HtmlCompressor::Compressor.new({
-          :preserve_line_breaks => true
+          :preserve_line_breaks => true,
+          :remove_comments => false
         })
         content = unindent(content)
 
