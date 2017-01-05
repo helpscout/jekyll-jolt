@@ -82,5 +82,60 @@ EXPECTED
 EXPECTED
       assert_equal(expected, post.output)
     end
+
+
+    should "render templates regardless of HTML comments" do
+      post = @site.posts.docs[7]
+      expected = <<EXPECTED
+<div>
+  <div>
+    <div>
+      <div class="outer"> <div class="indentation"> <h1 id="heading">Heading</h1> <p>Content</p> </div> </div>
+    </div>
+  </div>
+  <!-- /div -->
+</div>
+<!-- /div -->
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
+    should "render content with markdown's --- for <hr>" do
+      post = @site.posts.docs[8]
+      expected = <<EXPECTED
+<div> <p>Content</p> <hr /> <p>Content</p> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
+    should "render content with markdown's --- for <hr> when YAML is present" do
+      post = @site.posts.docs[9]
+      expected = <<EXPECTED
+<div> <p>Content</p> <hr /> <p>Content</p> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
+    should "render content with multiple markdown --- for <hr>" do
+      post = @site.posts.docs[10]
+      expected = <<EXPECTED
+<div> <p>Content</p> <hr /> <p>Content</p> <hr /> <p>Content</p> <hr /> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
+    should "render markdown title with ---" do
+      post = @site.posts.docs[11]
+      expected = <<EXPECTED
+<div> <h2 id="title">title</h2> <p>Content</p> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
   end
 end

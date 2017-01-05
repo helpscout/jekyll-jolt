@@ -156,7 +156,7 @@ module Jekyll
       # @param    content    { string }
       def unindent(content)
         # Remove initial whitespace
-        content = content.gsub(/^\s*\n/, "")
+        content = content.gsub(/\A^\s*\n/, "")
 
         # Remove indentations
         whitespace_regex = %r!^\s*!m
@@ -174,10 +174,6 @@ module Jekyll
       # @param    content    { string }
       def parse_front_matter(content)
         # Strip leading white-spaces
-        compressor = HtmlCompressor::Compressor.new({
-          :preserve_line_breaks => true,
-          :remove_comments => false
-        })
         content = unindent(content)
 
         if content =~ YAML_FRONT_MATTER_REGEXP
@@ -192,7 +188,7 @@ module Jekyll
           content = content.gsub(front_matter, "")
         end
 
-        compressor.compress(content)
+        content
       end
 
     end
