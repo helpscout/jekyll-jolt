@@ -55,7 +55,7 @@ module Jekyll
         # Remove leading whitespace
         # content = content.lstrip
         compressor = HtmlCompressor::Compressor.new({
-          :remove_comments => false
+          :remove_comments => true
         })
         site = context.registers[:site]
         template = load_template(context)

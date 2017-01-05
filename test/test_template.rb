@@ -54,7 +54,7 @@ EXPECTED
       post = @site.posts.docs[4]
       expected = <<EXPECTED
 <h1>Milk</h1>
-<div class=\"milk\"> <!-- Front matter test --> </div>
+<div class=\"milk\"> </div>
 EXPECTED
       assert_equal(expected, post.output)
     end
