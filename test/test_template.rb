@@ -137,5 +137,22 @@ EXPECTED
     end
 
 
+    should "render templates that are used multiple times" do
+      post = @site.posts.docs[12]
+      expected = <<EXPECTED
+<div class="outer"> <div class="inner"> <h1>Super Milk</h1> <div class="milk"> <p>Content</p> </div> </div> </div>
+
+<h2 id="content">Content</h2>
+<p>Buffer content</p>
+
+<div class="outer"> <div class="inner"> <h1>Milk</h1> <div class="milk"> </div> </div> </div>
+
+<h2 id="title">Title</h2>
+<p>Buffer content</p>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
   end
 end
