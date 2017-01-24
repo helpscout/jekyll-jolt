@@ -55,6 +55,10 @@ module Jekyll
         # Remove leading whitespace
         # content = content.lstrip
         compressor = HtmlCompressor::Compressor.new({
+          :compress_javascript => true,
+          :javascript_compressor => :yui,
+          :compress_css => true,
+          :css_compressor => :yui,
           :remove_comments => true
         })
         site = context.registers[:site]
