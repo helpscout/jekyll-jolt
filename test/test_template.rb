@@ -154,5 +154,38 @@ EXPECTED
     end
 
 
+    should "render templates that contain style tags" do
+      post = @site.posts.docs[13]
+      expected = <<EXPECTED
+<div class="content"> <h1 id="title">Super Milk</h1> <p>Content</p> </div>
+<style>
+  #title {
+    color: #222;
+  }
+  .content {
+    color: #333;
+  }
+</style>
+
+<h2 id="content">Content</h2>
+<p>Buffer content</p>
+
+<div class="content"> <h1 id="title">Title</h1> </div>
+<style>
+  #title {
+    color: #222;
+  }
+  .content {
+    color: #333;
+  }
+</style>
+
+<h2 id="title">Title</h2>
+<p>Buffer content</p>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
+
   end
 end
