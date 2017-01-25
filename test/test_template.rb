@@ -173,5 +173,13 @@ EXPECTED
     end
 
 
+    should "render links with inner divs correctly" do
+      post = @site.posts.docs[14]
+      expected = <<EXPECTED
+<div> <a href="/test"> <div> Content </div> </a> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
   end
 end
