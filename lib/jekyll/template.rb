@@ -166,8 +166,8 @@ module Jekyll
         # Remove indentations
         whitespace_regex = %r!^\s*!m
         if content =~ whitespace_regex
-          indentation = Regexp.last_match(0)
-          content = content.gsub(indentation, "")
+          indentation = Regexp.last_match(0).length
+          content = content.gsub(/^\ {#{indentation}}/, "")
         end
 
         content

@@ -69,21 +69,6 @@ EXPECTED
     end
 
 
-    should "render templates regardless of indentation amount" do
-      post = @site.posts.docs[6]
-      expected = <<EXPECTED
-<div>
-  <div>
-    <div>
-      <div class="outer"> <div class="indentation"> <h1 id="heading">Heading</h1> <p>Content</p> </div> </div>
-    </div>
-  </div>
-</div>
-EXPECTED
-      assert_equal(expected, post.output)
-    end
-
-
     should "render templates regardless of HTML comments" do
       post = @site.posts.docs[7]
       expected = <<EXPECTED

@@ -1,0 +1,19 @@
+---
+title: Title
+items:
+  -
+    title: One
+  -
+    title: Two
+  -
+    title: Three
+---
+<h1>{{ template.title }}</h1>
+{% if template.items %}
+<ul>
+  {% for item in template.items %}
+    <li>{{ item.title }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{{ template.content }}
