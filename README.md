@@ -171,4 +171,4 @@ We've been using `{% template %}` for many months now on the [Help Scout website
 
 
 ## Thanks ❤️
-Many thanks to [@alisdair](https://github.com/alisdair) for his help with code review and testing!
+Many thanks to [@alisdair](https://github.com/alisdair) for his help with code review/testing + [@hownowstephen](https://github.com/hownowstephen) for his help with Ruby things.
