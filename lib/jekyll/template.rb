@@ -115,6 +115,7 @@ module Jekyll
       # source: https://github.com/jekyll/jekyll/blob/e509cf2139d1a7ee11090b09721344608ecf48f6/lib/jekyll/tags/include.rb
       def add_template_to_dependency(site, path, context)
         if context.registers[:page] && context.registers[:page].key?("path")
+          path = get_template_path(path)
           site.regenerator.add_dependency(
             site.in_source_dir(context.registers[:page]["path"]),
             path
