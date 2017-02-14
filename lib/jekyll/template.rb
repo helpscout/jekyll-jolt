@@ -2,7 +2,6 @@ require "htmlcompressor"
 require "jekyll"
 require "jekyll/template/version"
 require "unindent"
-# require "yui-compressor"
 
 module Jekyll
   module Tags
@@ -57,10 +56,6 @@ module Jekyll
         # Remove leading whitespace
         # content = content.lstrip
         compressor = HtmlCompressor::Compressor.new({
-          :compress_javascript => true,
-          :javascript_compressor => :yui,
-          :compress_css => true,
-          :css_compressor => :yui,
           :remove_comments => true
         })
         site = context.registers[:site]
@@ -101,27 +96,15 @@ module Jekyll
           end
         end
 
-        content = parse_content(context, content)
-
-        # sanitize
-        # Determines whether to parse as HTML or markdown
-        unless @sanitize
-          converter = site.find_converter_instance(::Jekyll::Converters::Markdown)
-          content = content.to_s.unindent
-          content = converter.convert(content)
-        else
-          content = content.to_s.unindent
-        end
-
-        # setting the template content
+        content = sanitize(site, parse_content(context, content))
         context["template"]["content"] = content
 
-        # rendering the template with the content
-        @output = template.render( context )
-        # normalizes whitespace and indentation
-        @output = compressor.compress(@output)
+        compressor.compress(template.render(context))
       end
 
+      # update_attributes(data)
+      # Description: Merges data with @attributes.
+      # @param    data    { hash }
       def update_attributes(data)
         if data
           @attributes = @attributes.merge(data)
@@ -172,8 +155,6 @@ module Jekyll
       def get_template_content(template)
         file_path = get_template_path(template)
         path = File.read(file_path.strip)
-        # returns template content
-        path
       end
 
       # load_template(context)
@@ -201,6 +182,22 @@ module Jekyll
           template_obj
         else
           raise Liquid::SyntaxError, "Could not find #{file_path} in your templates"
+        end
+      end
+
+      # sanitize(site, content)
+      # Description: Renders the content as markdown or HTML based on the
+      # "parse" attribute.
+      # Returns: Content (string).
+      # @param    site      { Jekyll site instance }
+      # @param    content   { string }
+      def sanitize(site, content)
+        unless @sanitize
+          converter = site.find_converter_instance(::Jekyll::Converters::Markdown)
+          content = content.to_s.unindent
+          content = converter.convert(content)
+        else
+          content = content.to_s.unindent
         end
       end
 
