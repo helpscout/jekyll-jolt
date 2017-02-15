@@ -1,7 +1,6 @@
 require "htmlcompressor"
 require "jekyll"
 require "jekyll/template/version"
-require "unindent"
 
 module Jekyll
   module Tags
@@ -17,12 +16,12 @@ module Jekyll
       # Description: Extends Liquid's default initialize method.
       def initialize(tag_name, markup, tokens)
         super
-        @root_path = false
+        @site = false
 
         # @template_name = markup
         if markup =~ Syntax
 
-          @template_name = $1
+          @template_name = $1.freeze
           @attributes = {}
           @sanitize = false
 
@@ -36,12 +35,6 @@ module Jekyll
         end
       end
 
-      # parse_content
-      # Description: Extends Liquid's default parse_content method.
-      def parse_content(context, content)
-        content
-      end
-
       # render
       # Description: Extends Liquid's default render method. This method also
       # adds additional features:
@@ -51,53 +44,39 @@ module Jekyll
       # - supports custom attributes to be used in template
       def render(context)
         content = super
-        # Set the root_path
-        @root_path = context.registers[:site].source
+        @site = context.registers[:site]
         # Remove leading whitespace
         # content = content.lstrip
         compressor = HtmlCompressor::Compressor.new({
           :remove_comments => true
         })
-        site = context.registers[:site]
 
-        add_template_to_dependency(site, @template_name, context)
+        add_template_to_dependency(@template_name, context)
+
         template_obj = load_cached_template(@template_name, context)
-        template_data = template_obj["data"]
-        update_attributes(template_data)
+        update_attributes(template_obj["data"])
 
         template = template_obj["template"]
 
         # Define the default template attributes
         # Source:
         # https://github.com/Shopify/liquid/blob/9a7778e52c37965f7b47673da09cfb82856a6791/lib/liquid/tags/include.rb
-        context["template_name"] = context.evaluate(@template_name)
+        context["template_name"] = @template_name
         context["partial"] = true
         context["template"] = Hash.new
 
         # Parse and extend template's front-matter with content front-matter
-        content_data = get_front_matter(content)
-        update_attributes(content_data)
+        update_attributes(get_front_matter(content))
         
-        # Remove front matter
-        content = strip_front_matter(content)
-
         # Setting template attributes from @attributes
         # This allows for @attributes to be used within the template as
         # {{ template.atttribute_name }}
         if @attributes
-          @attributes.each do |key, value|
-            val = context.evaluate(value)
-            context["template"][key] = val
-
-            # Adjust sanitize if parse: html
-            if (key == "parse") && (val == "html")
-              @sanitize = true
-            end
-          end
+          @sanitize = @attributes["parse"] && @attributes["parse"] == "html"
+          context["template"].merge!(@attributes)
         end
 
-        content = sanitize(site, parse_content(context, content))
-        context["template"]["content"] = content
+        context["template"]["content"] = sanitize(strip_front_matter(content))
 
         compressor.compress(template.render(context))
       end
@@ -107,18 +86,17 @@ module Jekyll
       # @param    data    { hash }
       def update_attributes(data)
         if data
-          @attributes = @attributes.merge(data)
+          @attributes.merge!(data)
         end
       end
 
-      # add_template_to_dependency(site, path, context)
+      # add_template_to_dependency(path, context)
       # source: https://github.com/jekyll/jekyll/blob/e509cf2139d1a7ee11090b09721344608ecf48f6/lib/jekyll/tags/include.rb
-      def add_template_to_dependency(site, path, context)
+      def add_template_to_dependency(path, context)
         if context.registers[:page] && context.registers[:page].key?("path")
-          path = get_template_path(path)
-          site.regenerator.add_dependency(
-            site.in_source_dir(context.registers[:page]["path"]),
-            path
+          @site.regenerator.add_dependency(
+            @site.in_source_dir(context.registers[:page]["path"]),
+            get_template_path(path)
           )
         end
       end
@@ -132,10 +110,7 @@ module Jekyll
         if cached_templates.key?(path)
           cached_templates[path]
         else
-          begin
-            template = load_template(context)
-            cached_templates[path] = template
-          end
+          cached_templates[path] = load_template()
         end
       end
 
@@ -143,10 +118,7 @@ module Jekyll
       # Returns: A full file path of the template
       # @param    path    { string }
       def get_template_path(path)
-        # default template path
-        dir = @root_path.to_s
-        view = "_templates/" + path.to_s
-        File.join(dir, view).to_s
+        File.join(@site.source.to_s, "_templates", path.to_s)
       end
 
       # get_template_content(template)
@@ -154,22 +126,18 @@ module Jekyll
       # Returns: Template content
       # @param    template    { string }
       def get_template_content(template)
-        file_path = get_template_path(template)
-        path = File.read(file_path.strip)
+        path = File.read(get_template_path(template).strip)
       end
 
-      # load_template(context)
+      # load_template()
       # Description: Extends Liquid's default load_template method. Also provides
       # extra enhancements:
       # - parses and sets template front-matter content
       # Returns: Template class
-      def load_template(context)
-        # Set the root_path
-        @root_path = context.registers[:site].source
-        file_path = get_template_path(@template_name)
-        file = context.registers[:site]
+      def load_template()
+        file = @site
           .liquid_renderer
-          .file(file_path)
+          .file(get_template_path(@template_name))
         # Set the template_content
         template_content = get_template_content(@template_name)
 
@@ -186,19 +154,17 @@ module Jekyll
         end
       end
 
-      # sanitize(site, content)
+      # sanitize(content)
       # Description: Renders the content as markdown or HTML based on the
       # "parse" attribute.
       # Returns: Content (string).
-      # @param    site      { Jekyll site instance }
       # @param    content   { string }
-      def sanitize(site, content)
+      def sanitize(content)
         unless @sanitize
-          converter = site.find_converter_instance(::Jekyll::Converters::Markdown)
-          content = content.to_s.unindent
-          content = converter.convert(content)
+          converter = @site.find_converter_instance(::Jekyll::Converters::Markdown)
+          content = converter.convert(unindent(content))
         else
-          content = content.to_s.unindent
+          content = unindent(content)
         end
       end
 
@@ -208,13 +174,13 @@ module Jekyll
       # @param    content    { string }
       def unindent(content)
         # Remove initial whitespace
-        content = content.gsub(/\A^\s*\n/, "")
+        content.gsub!(/\A^\s*\n/, "")
 
         # Remove indentations
         whitespace_regex = %r!^\s*!m
         if content =~ whitespace_regex
           indentation = Regexp.last_match(0).length
-          content = content.gsub(/^\ {#{indentation}}/, "")
+          content.gsub!(/^\ {#{indentation}}/, "")
         end
 
         content
@@ -232,9 +198,7 @@ module Jekyll
           # Push YAML data to the template's attributes
           values = SafeYAML.load(front_matter)
           # Set YAML data to @attributes
-          values.each do |key, value|
-            data[key] = value
-          end
+          data.merge!(values)
           # Returns data
           data
         end
@@ -251,7 +215,7 @@ module Jekyll
         if content =~ YAML_FRONT_MATTER_REGEXP
           front_matter = Regexp.last_match(0)
           # Returns content with stripped front-matter
-          content = content.gsub(front_matter, "")
+          content.gsub!(front_matter, "")
         end
 
         content
