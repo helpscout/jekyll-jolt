@@ -72,8 +72,15 @@ module Jekyll
         # This allows for @attributes to be used within the template as
         # {{ template.atttribute_name }}
         if @attributes
-          @sanitize = @attributes["parse"] && @attributes["parse"] == "html"
-          context["template"].merge!(@attributes)
+          @attributes.each do |key, value|
+            val = context.evaluate(value)
+            context["template"][key] = val
+
+            # Adjust sanitize if parse: html
+            if (key == "parse") && (val == "html")
+              @sanitize = true
+            end
+          end
         end
 
         context["template"]["content"] = sanitize(strip_front_matter(content))
