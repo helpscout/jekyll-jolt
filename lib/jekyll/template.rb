@@ -53,10 +53,7 @@ module Jekyll
 
         add_template_to_dependency(@template_name, context)
 
-        template_obj = load_cached_template(@template_name, context)
-        update_attributes(template_obj["data"])
-
-        template = template_obj["template"]
+        template = load_cached_template(@template_name, context)
 
         # Define the default template attributes
         # Source:
@@ -114,11 +111,13 @@ module Jekyll
         context.registers[:cached_templates] ||= {}
         cached_templates = context.registers[:cached_templates]
 
-        if cached_templates.key?(path)
-          cached_templates[path]
-        else
+        unless cached_templates.key?(path)
           cached_templates[path] = load_template()
         end
+        template = cached_templates[path]
+
+        update_attributes(template["data"])
+        template["template"]
       end
 
       # get_template_path(path)
@@ -133,7 +132,7 @@ module Jekyll
       # Returns: Template content
       # @param    template    { string }
       def get_template_content(template)
-        path = File.read(get_template_path(template).strip)
+        File.read(get_template_path(template).strip)
       end
 
       # load_template()
@@ -169,9 +168,9 @@ module Jekyll
       def sanitize(content)
         unless @sanitize
           converter = @site.find_converter_instance(::Jekyll::Converters::Markdown)
-          content = converter.convert(unindent(content))
+          converter.convert(unindent(content))
         else
-          content = unindent(content)
+          unindent(content)
         end
       end
 
@@ -199,15 +198,11 @@ module Jekyll
       def get_front_matter(content)
         # Strip leading white-spaces
         content = unindent(content)
-        data = Hash.new
         if content =~ YAML_FRONT_MATTER_REGEXP
           front_matter = Regexp.last_match(0)
-          # Push YAML data to the template's attributes
           values = SafeYAML.load(front_matter)
-          # Set YAML data to @attributes
-          data.merge!(values)
-          # Returns data
-          data
+        else
+          Hash.new
         end
       end
 
