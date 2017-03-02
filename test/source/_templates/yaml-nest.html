@@ -1,0 +1,19 @@
+---
+title: "Hello"
+heading: "There"
+---
+
+<h1>{{ template.title }}</h1>
+
+{% template milk.html %}
+---
+title: {{ template.heading }}
+---
+
+  {% template milk.html %}
+  ---
+  title: {{ template.heading }}
+  ---
+  {% endtemplate %}
+{% endtemplate %}
+

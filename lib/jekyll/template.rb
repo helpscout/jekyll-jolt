@@ -71,7 +71,7 @@ module Jekyll
 
         # Parse and extend template's front-matter with content front-matter
         update_attributes(get_front_matter(content))
-        
+
         # Setting template attributes from @attributes
         # This allows for @attributes to be used within the template as
         # {{ template.atttribute_name }}
@@ -159,7 +159,7 @@ module Jekyll
         content = strip_front_matter(template_content)
 
         if template_content
-          template_obj["data"] = data 
+          template_obj["data"] = data
           template_obj["template"] = file.parse(content)
           template_obj
         else
