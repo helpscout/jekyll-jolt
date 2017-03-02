@@ -35,6 +35,13 @@ module Jekyll
         end
       end
 
+      # blank?
+      # Description: Override's Liquid's default blank checker. This allows
+      # for templates to be used without passing inner content.
+      def blank?
+        false
+      end
+
       # render
       # Description: Extends Liquid's default render method. This method also
       # adds additional features:

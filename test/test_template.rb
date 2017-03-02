@@ -180,5 +180,14 @@ EXPECTED
       assert_equal(expected, post.output)
     end
 
+    should "render template without inner content" do
+      post = @site.posts.docs[19]
+      expected = <<EXPECTED
+<h1>Milk</h1>
+<div class="milk"> </div>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
+
   end
 end

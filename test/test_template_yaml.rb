@@ -17,6 +17,5 @@ class TestTemplate < JekyllUnitTest
 EXPECTED
       assert_equal(expected, post.output)
     end
-
   end
 end
