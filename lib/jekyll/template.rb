@@ -1,6 +1,7 @@
 require "htmlcompressor"
 require "jekyll"
 require "jekyll/template/version"
+require "SecureRandom"
 
 module Jekyll
   module Tags
@@ -24,6 +25,7 @@ module Jekyll
           @template_name = $1.freeze
           @attributes = {}
           @sanitize = false
+          @id = SecureRandom.uuid
 
           # Parse parameters
           # Source: https://gist.github.com/jgatjens/8925165
@@ -33,6 +35,10 @@ module Jekyll
         else
           raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
         end
+      end
+
+      def id
+        @id
       end
 
       # blank?
@@ -59,7 +65,6 @@ module Jekyll
         })
 
         add_template_to_dependency(@template_name, context)
-
         template = load_cached_template(@template_name, context)
 
         # Define the default template attributes
@@ -89,7 +94,11 @@ module Jekyll
 
         context["template"]["content"] = sanitize(strip_front_matter(content))
 
-        compressor.compress(template.render(context))
+        store_template_data(context)
+        content = compressor.compress(template.render(context))
+        reset_template_data(context)
+
+        content
       end
 
       # update_attributes(data)
@@ -98,6 +107,34 @@ module Jekyll
       def update_attributes(data)
         if data
           @attributes.merge!(data)
+        end
+      end
+
+      # store_template_data(context)
+      # Description: Works with reset_template_data. This is a work-around
+      # to ensure data stays in scope and isn't leaked from child->parent
+      # template.
+      def store_template_data(context)
+        context.registers[:template_data_store] ||= {}
+        store = context.registers[:template_data_store]
+        unless store.key?(@id)
+          store[@id] = context["template"]
+        end
+      end
+
+      # reset_template_data(context)
+      # Description: Works with store_template_data. This is a work-around
+      # to ensure data stays in scope and isn't leaked from child->parent
+      # template.
+      def reset_template_data(context)
+        context.registers[:template_data_store] ||= {}
+        store = context.registers[:template_data_store]
+        if store.keys.size
+          if store.keys[0] == @id
+            store = {}
+          else
+            context["template"] = store[store.keys[0]]
+          end
         end
       end
 
@@ -156,11 +193,11 @@ module Jekyll
 
         template_obj = Hash.new
         data = get_front_matter(template_content)
-        content = strip_front_matter(template_content)
+        markup = strip_front_matter(template_content)
 
         if template_content
           template_obj["data"] = data
-          template_obj["template"] = file.parse(content)
+          template_obj["template"] = file.parse(markup)
           template_obj
         else
           raise Liquid::SyntaxError, "Could not find #{file_path} in your templates"
