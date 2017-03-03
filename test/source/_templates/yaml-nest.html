@@ -1,19 +1,24 @@
 ---
 title: "Hello"
-heading: "There"
+should-be: "Hello"
 ---
 
-<h1>{{ template.title }}</h1>
-
-{% template milk.html %}
+{% template data.html %}
 ---
-title: {{ template.heading }}
+title: "Level 1"
 ---
-
-  {% template milk.html %}
-  ---
-  title: {{ template.heading }}
-  ---
+  {% template data.html %}
+    {% template data.html %}
+    ---
+    title: "Level 3"
+    ---
+    {% endtemplate %}
   {% endtemplate %}
 {% endtemplate %}
+{% template data.html %}
+---
+title: "Level 1 Dupe"
+---
+{% endtemplate %}
 
+<h1>{{ template.title }}</h1>
