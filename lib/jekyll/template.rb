@@ -1,7 +1,6 @@
 require "htmlcompressor"
 require "jekyll"
 require "jekyll/template/version"
-require "SecureRandom"
 
 module Jekyll
   module Tags
@@ -25,7 +24,7 @@ module Jekyll
           @template_name = $1.freeze
           @attributes = {}
           @sanitize = false
-          @id = SecureRandom.uuid
+          @id = rand(36**8).to_s(36)
 
           # Parse parameters
           # Source: https://gist.github.com/jgatjens/8925165
