@@ -130,7 +130,7 @@ module Jekyll
         store = context.registers[:template_data_store]
         if store.keys.size
           if store.keys[0] == @id
-            store = {}
+            context.registers[:template_data_store] = false
           else
             context["template"] = store[store.keys[0]]
           end
