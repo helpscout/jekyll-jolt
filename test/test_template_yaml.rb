@@ -18,7 +18,7 @@ EXPECTED
       assert_equal(expected, post.output)
     end
 
-    should "WUT" do
+    should "render nested templates while preserving scope of YAML data" do
       post = @site.posts.docs[20]
       expected = <<EXPECTED
 <h1>Level 3</h1>
@@ -30,5 +30,22 @@ EXPECTED
       assert_equal(expected, post.output)
     end
 
+    should "render multiple nested templates while preserving scope of YAML data" do
+      post = @site.posts.docs[21]
+      expected = <<EXPECTED
+<h1>Level 3</h1>
+<h1>Default title</h1>
+<h1>Level 1</h1>
+<h1>Level 1 Dupe</h1>
+<h1>You</h1>
+
+<h1>Level 3</h1>
+<h1>Default title</h1>
+<h1>Level 1</h1>
+<h1>Level 1 Dupe</h1>
+<h1>WUT M8</h1>
+EXPECTED
+      assert_equal(expected, post.output)
+    end
   end
 end
