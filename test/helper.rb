@@ -16,7 +16,7 @@ include Jekyll
 
 # Report with color.
 Minitest::Reporters.use! [
-  Minitest::Reporters::DefaultReporter.new(
+  Minitest::Reporters::SpecReporter.new(
     :color => true
   )
 ]

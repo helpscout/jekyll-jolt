@@ -6,16 +6,16 @@ module Jekyll
   module Tags
     class TemplateBlock < Liquid::Block
       include Liquid::StandardFilters
-      
+
       CONTEXT_NAME = "template"
       CONTEXT_CACHE_NAME = :cached_templates
       CONTEXT_DATA_NAME = :template_data
       CONTEXT_SCOPE_NAME = :template_data_scope
       CONTEXT_STORE_NAME = :template_data_store
-    
+
       PROPS_NAME = "props"
       TEMPLATE_DIR = "_templates"
-      
+
       LIQUID_SYNTAX_REGEXP = /(#{Liquid::QuotedFragment}+)?/
       PROPS_REGEXP = /#{PROPS_NAME}\./
       WHITESPACE_REGEXP = %r!^\s*!m
@@ -97,7 +97,7 @@ module Jekyll
           value
         end
       end
-      
+
       # evaluate_props
       # Description: Evaluates props that are being passed into the template.
       def evaluate_props()
@@ -132,7 +132,7 @@ module Jekyll
         @site = @context.registers[:site]
 
         template_store_data(@attributes)
-        
+
         # This allows for Jekyll intelligently re-render markup during
         # incremental builds.
         add_template_to_dependency(@template_name)
@@ -144,7 +144,7 @@ module Jekyll
         evaluate_props()
 
         content = super
-        
+
         # Return the parsed/normalized content
         render_template(template, content)
       end
@@ -181,7 +181,7 @@ module Jekyll
             end
           end
         end
-        
+
         # puts @attributes
         @context[CONTEXT_NAME]["content"] = sanitize(strip_front_matter(content))
         store_template_data()
