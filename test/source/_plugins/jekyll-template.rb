@@ -1,1 +1,0 @@
-../../../lib/jekyll-template.rb
