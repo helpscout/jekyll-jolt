@@ -50,8 +50,6 @@ module Jekyll
               @attributes[key] = Liquid::Expression.parse(value)
             end
           end
-        else
-          raise SyntaxError.new(options[:locale].t("errors.syntax.include".freeze))
         end
       end
 
@@ -288,8 +286,6 @@ module Jekyll
           template["data"] = data
           template["template"] = file.parse(markup)
           template
-        else
-          raise Liquid::SyntaxError, "Could not find #{file_path} in your templates"
         end
       end
 
