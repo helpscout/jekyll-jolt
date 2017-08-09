@@ -45,9 +45,9 @@ module Jekyll
           # Source: https://gist.github.com/jgatjens/8925165
           markup.scan(Liquid::TagAttributes) do |key, value|
             if (value =~ PROPS_REGEXP) != nil
-              @attributes[key] = value
+              @props[key] = @attributes[key] = value
             else
-              @attributes[key] = Liquid::Expression.parse(value)
+              @props[key] = @attributes[key] = Liquid::Expression.parse(value)
             end
           end
         end
@@ -158,10 +158,10 @@ module Jekyll
         # https://github.com/Shopify/liquid/blob/9a7778e52c37965f7b47673da09cfb82856a6791/lib/liquid/tags/include.rb
         @context[CONTEXT_NAME] = Hash.new
 
-        # Parse and extend template's front-matter with content front-matter
-        update_attributes(get_front_matter(content))
         # Add props
         update_attributes(@props)
+        # Parse and extend template's front-matter with content front-matter
+        update_attributes(get_front_matter(content))
         # Update the template's store data
         template_store_data(@attributes)
 
