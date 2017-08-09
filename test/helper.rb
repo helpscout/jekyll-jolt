@@ -19,6 +19,7 @@ require 'minitest/profile'
 require 'rspec/mocks'
 
 require 'jekyll'
+require 'jekyll/joule'
 
 Jekyll.logger = Logger.new(StringIO.new)
 
@@ -36,6 +37,15 @@ Minitest::Reporters.use! [
 
 class JekyllUnitTest < Minitest::Test
   include ::RSpec::Mocks::ExampleMethods
+
+  def setup
+    @site = Site.new(site_configuration)
+    @site.read
+    @site.generate
+    @site.render
+
+    @joule = Jekyll::Joule::Site.new(@site)
+  end
 
   def mocks_expect(*args)
     RSpec::Mocks::ExampleMethods::ExpectHost.instance_method(:expect).\
